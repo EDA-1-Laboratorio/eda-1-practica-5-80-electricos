@@ -16,6 +16,7 @@
 void inicializar(PILA *stk) {
     /* TODO: 
        1. Inicializar el contador de elementos (cnt) a 0.
+					int cnt;
        2. Inicializar el puntero al tope a NULL. 
     */
 }

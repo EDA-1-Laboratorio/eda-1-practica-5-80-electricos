@@ -16,11 +16,11 @@ struct dato {
 };
 
 typedef struct dato DATO; // Define un nuevo tipo de dato llamado "DATO" que es una estructura que contiene un tipo (OPERADOR o VALOR) y una unión que puede almacenar un operador o un valor.
-typedef enum {FALSO, VERDADERO} BOOLEAN; // Define un nuevo tipo de dato llamado "BOOLEAN" que es un enumerado con dos valores: FALSO (0) y VERDADERO (1). Esto se utiliza para representar valores booleanos en el programa, facilitando la lectura y comprensión del código al usar términos más descriptivos en lugar de números enteros para representar estados booleanos.
+typedef enum {FALSE, TRUE} BOOLEAN; // Define un nuevo tipo de dato llamado "BOOLEAN" que es un enumerado con dos valores: FALSE (0) y VERDADERO (1). Esto se utiliza para representar valores booleanos en el programa, facilitando la lectura y comprensión del código al usar términos más descriptivos en lugar de números enteros para representar estados booleanos.
 
 struct elemento {
     DATO d; // Cada elemento de la pila contiene un dato, que puede ser un operador o un valor.
-    struct elemento *siguiente; // Un puntero al siguiente elemento en la pila, lo que permite la estructura de datos de tipo pila (LIFO).
+    struct elemento *sig; // Un puntero al siguiente elemento en la pila, lo que permite la estructura de datos de tipo pila (LIFO).
 };
 
 typedef struct elemento ELEMENTO; // Define un nuevo tipo de dato llamado "ELEMENTO" que es una estructura que contiene un dato y un puntero al siguiente elemento en la pila.

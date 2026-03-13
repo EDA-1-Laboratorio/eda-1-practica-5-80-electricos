@@ -20,10 +20,30 @@ typedef struct {
 } PILA;
 
 // --- Funciones de Pila (A completar por el alumno) ---
-void inicializar(PILA *s);
-void push(PILA *s, DATA x);
-DATA pop(PILA *s);
-int estavacia(PILA *s);
+void inicializar(PILA *s){
+    s->cnt=0;
+    s->tope=NULL;
+}
+void push(PILA *s, DATA x){
+    ELEMENTO *nuevo=(ELEMENTO*)malloc(sizeof(ELEMENTO));
+    nuevo->d=x;
+    nuevo->siguiente=s->tope;
+    s->tope=nuevo;
+    s->cnt++;
+}
+DATA pop(PILA *s){
+    if(s->==NULL)
+        return'\0';
+    ELEMENTO*temp=s->tope;
+    DATA dato=temp->d;
+    s->tope=temp->siguiente;
+    free(temp);
+    s->cnt--;
+    return dato;
+}
+int estavacia(PILA *s){
+    return(s->tope==NULL);
+}
 
 /**
  * TAREA PRINCIPAL: Determinar si la cadena es palíndromo.
@@ -53,6 +73,7 @@ int esPalindromo(char cadena[]) {
     // ¿Cómo usarías las dos pilas para tener la cadena al derecho y al revés?
     
     /* TODO: Implementar lógica de comparación usando las dos pilas */
+    
 
     return 1; // Retornar 1 si es palíndromo, 0 si no.
 }

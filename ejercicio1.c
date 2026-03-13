@@ -8,12 +8,15 @@
 #include <ctype.h>
 #include <assert.h>
 
+
 // =========================================================
 // SECCIÓN 1: PRIMITIVAS DE LA PILA (A IMPLEMENTAR)
 // =========================================================
 
 // Funcion inicializar
 void inicializar(PILA *stk) {
+    stk->cnt = 0;
+    stk->tope = NULL;
     /* TODO: 
        1. Inicializar el contador de elementos (cnt) a 0.
        2. Inicializar el puntero al tope a NULL. 
@@ -22,6 +25,17 @@ void inicializar(PILA *stk) {
 
 // Funcion push
 void push(PILA *stk, DATO x) {
+    ELEMENTO *nuevo = (ELEMENTO*)malloc(sizeof(ELEMENTO));
+    if (nuevo == NULL){
+        
+        printf("ERROR: nomas no \n");
+        exit(1);
+        
+    }
+    nuevo -> d = x;
+    nuevo -> sig = stk -> tope;
+    stk -> tope = nuevo;
+    stk -> cnt++;
     /* TODO: 
        1. Declarar un puntero a ELEMENTO y asignar memoria con malloc.
        2. Asignar el dato 'x' al nuevo elemento.
@@ -37,6 +51,12 @@ DATO pop(PILA *stk) {
         printf("ERROR: Intento de POP en pila vacia (Stack Underflow)\n");
         exit(1); 
     }
+    DATO valor = stk -> tope -> d;
+    ELEMENTO *temp = stk -> tope;
+    stk -> tope = stk -> tope -> sig;
+    stk -> cnt--;
+    free(temp);
+    return valor;
     /* TODO: 
        1. Declarar una variable DATO para el valor de retorno.
        2. Declarar un puntero ELEMENTO temporal para el nodo a eliminar.
@@ -51,13 +71,14 @@ DATO pop(PILA *stk) {
 // Funcion estavacia
 BOOLEAN estavacia(PILA *stk) {
     /* TODO: Retornar VERDADERO si el contador es 0, FALSO de lo contrario. */
-    return FALSE; 
+    
+    return (stk -> cnt == 0) ? TRUE : FALSE; 
 }
 
 // Funcion estallena
 BOOLEAN estallena(PILA *stk) {
     /* TODO: Retornar VERDADERO si el contador es igual a FULL. */
-    return FALSE;
+    return (stk -> cnt >= FULL ) ? TRUE : FALSE;
 }
 
 // =========================================================

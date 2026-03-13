@@ -1,188 +1,107 @@
 /* 
- * Objetivo: Completar las primitivas de la pila para evaluación de RPN.
+ * Objetivo: Utilizar el comportamiento LIFO para invertir cadenas.
  */
 
-#include "pilas.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <assert.h>
+#include <string.h>
 
+// Definición de tipos básicos
+typedef char DATA;
+typedef struct elemento {
+    DATA d;
+    struct elemento *siguiente;
+} ELEMENTO;
 
-// =========================================================
-// SECCIÓN 1: PRIMITIVAS DE LA PILA (A IMPLEMENTAR)
-// =========================================================
+typedef struct {
+    int cnt;
+    ELEMENTO *tope;
+} PILA;
 
-// Funcion inicializar
-void inicializar(PILA *stk) {
-    stk->cnt = 0;
-    stk->tope = NULL;
-    /* TODO: 
-       1. Inicializar el contador de elementos (cnt) a 0.
-       2. Inicializar el puntero al tope a NULL. 
-    */
+// --- Funciones de Pila (A completar por el alumno) ---
+void inicializar(PILA *s){
+    s->cnt=0;
+    s->tope=NULL;
 }
-
-// Funcion push
-void push(PILA *stk, DATO x) {
-    ELEMENTO *nuevo = (ELEMENTO*)malloc(sizeof(ELEMENTO));
-    if (nuevo == NULL){
-        
-        printf("ERROR: nomas no \n");
-        exit(1);
-        
-    }
-    nuevo -> d = x;
-    nuevo -> sig = stk -> tope;
-    stk -> tope = nuevo;
-    stk -> cnt++;
-    /* TODO: 
-       1. Declarar un puntero a ELEMENTO y asignar memoria con malloc.
-       2. Asignar el dato 'x' al nuevo elemento.
-       3. Hacer que el nuevo elemento apunte al actual tope de la pila.
-       4. Actualizar el tope de la pila para que sea el nuevo elemento.
-       5. Incrementar el contador (cnt).
-    */
+void push(PILA *s, DATA x){
+    ELEMENTO *nuevo=(ELEMENTO*)malloc(sizeof(ELEMENTO));
+    nuevo->d=x;
+    nuevo->siguiente=s->tope;
+    s->tope=nuevo;
+    s->cnt++;
 }
-
-// Funcion pop
-DATO pop(PILA *stk) {
-    if (estavacia(stk)) {
-        printf("ERROR: Intento de POP en pila vacia (Stack Underflow)\n");
-        exit(1); 
-    }
-    DATO valor = stk -> tope -> d;
-    ELEMENTO *temp = stk -> tope;
-    stk -> tope = stk -> tope -> sig;
-    stk -> cnt--;
+DATA pop(PILA *s){
+    if(s->tope==NULL)
+        return'\0';
+    ELEMENTO*temp=s->tope;
+    DATA dato=temp->d;
+    s->tope=temp->siguiente;
     free(temp);
-    return valor;
-    /* TODO: 
-       1. Declarar una variable DATO para el valor de retorno.
-       2. Declarar un puntero ELEMENTO temporal para el nodo a eliminar.
-       3. Guardar el dato del tope en la variable DATO.
-       4. Hacer que el tope de la pila apunte al siguiente elemento.
-       5. Decrementar el contador (cnt).
-       6. Liberar la memoria (free) del nodo temporal.
-       7. Retornar el dato.
-    */
+    s->cnt--;
+    return dato;
+}
+int estavacia(PILA *s){
+    return(s->tope==NULL);
 }
 
-// Funcion estavacia
-BOOLEAN estavacia(PILA *stk) {
-    /* TODO: Retornar VERDADERO si el contador es 0, FALSO de lo contrario. */
-    
-    return (stk -> cnt == 0) ? TRUE : FALSE; 
-}
+/**
+ * TAREA PRINCIPAL: Determinar si la cadena es palíndromo.
+ * Estrategia sugerida:
+ * 1. Recorrer la cadena y meter cada letra en la PILA A.
+ * 2. Pasar la mitad de la PILA A a una PILA B para comparar 
+ * (o usar una estrategia de inversión total).
+ */
+int esPalindromo(char cadena[]) {
+    PILA original, invertida;
+    inicializar(&original);
+    inicializar(&invertida);
 
-// Funcion estallena
-BOOLEAN estallena(PILA *stk) {
-    /* TODO: Retornar VERDADERO si el contador es igual a FULL. */
-    return (stk -> cnt >= FULL ) ? TRUE : FALSE;
-}
+    int i, longitud = strlen(cadena);
 
-// =========================================================
-// SECCIÓN 2: LÓGICA DE ALTO NIVEL (DESCRIPCIÓN INCLUIDA)
-// =========================================================
-
-// Funcion rellenar
-void rellenar(PILA *stk, const char *str){
-    const char *p = str; 
-    char c1, c2; 
-    BOOLEAN b1, b2; 
-    DATO d; 
-    PILA aux; 
-
-    inicializar(stk); // Inicializamos la pila principal antes de llenarla.
-    inicializar(&aux); // Inicializamos la pila auxiliar para invertir el orden.
-
-    while (*p != '\0') {
-        while(isspace(*p) || *p == '\t' || *p == ',') { 
-            p++; // Saltamos espacios, tabulaciones y comas.
-        }
-        if (*p == '\0') break;
-
-        b1 = (BOOLEAN) ((c1 = *p) == '+' || c1 == '-' || c1 == '*'); 
-        b2 = (BOOLEAN) ((c2 = *(p + 1)) == ' ' || c2 == '\t' || c2 == ',' || c2 == '\0'); 
-
-        if (b1 && b2) { 
-            d.tipo = OPERADOR; // Establecemos el tipo del dato como OPERADOR.
-            d.u.op = c1; // Asignamos el operador actual.
-            p++;
-        }
-        else {
-            d.tipo = VALOR;
-            // Extraemos el valor entero de la cadena y lo almacenamos en val.
-            assert(sscanf(p, "%d", &d.u.val) == 1); 
-            while (*p != '\0' && !isspace(*p) && *p != '\t' && *p != ',') {
-                p++; // Avanzamos p hasta el siguiente separador.
-            }
-        }
-        
-        if (!estallena(&aux)) { 
-            push(&aux, d); // Empujamos a la auxiliar para procesar la cadena.
-        }
-    }
-    
-    // Ahora tomamos el dato de la pila auxiliar y lo pasamos a la principal.
-    // Esto invierte el orden para que se procesen correctamente después.
-    while (!estavacia(&aux)) { 
-        d = pop(&aux); 
-        if (!estallena(stk)) { 
-            push(stk, d); 
-        }
-    }
-}
-
-// Funcion evaluar
-int evaluar(PILA *polaca) {
-    DATO d, d1, d2;
-    PILA evaluacion;
-
-    // Inicializar la pila de evaluación para almacenar los operandos.
-    inicializar(&evaluacion); 
-
-    while(!estavacia(polaca)) {
-        d = pop(polaca);
-        switch (d.tipo) { 
-            case VALOR: 
-                // Si el dato es un valor, se empuja a la pila de evaluación.
-                push(&evaluacion, d); 
-                break;
-            case OPERADOR: 
-                // Sacamos los dos argumentos de la pila de evaluación.
-                // d2 es el segundo operando y d1 el primero (LIFO).
-                d2 = pop(&evaluacion); 
-                d1 = pop(&evaluacion);
-                d.tipo = VALOR; // El resultado será un VALOR.
-                
-                switch (d.u.op) { 
-                    case '+': d.u.val = d1.u.val + d2.u.val; break;
-                    case '-': d.u.val = d1.u.val - d2.u.val; break;
-                    case '*': d.u.val = d1.u.val * d2.u.val; break;
-                }
-                // Empujamos el resultado de vuelta para futuras operaciones.
-                push(&evaluacion, d); 
-                break;
+    // 1. Filtrar y llenar la pila original
+    for (i = 0; i < longitud; i++) {
+        if (isalpha(cadena[i])) { // Solo letras
+            char letra = tolower(cadena[i]);
+            push(&original, letra);
         }
     }
 
-    // El resultado final se encuentra en el tope de la pila de evaluación.
-    d = pop(&evaluacion); 
-    return d.u.val; 
+    // 2. Crear la versión invertida
+    // TIP: Al pasar elementos de una pila a otra, el orden se invierte.
+    // Pero para comparar, necesitamos que una mantenga el orden original.
+    // ¿Cómo usarías las dos pilas para tener la cadena al derecho y al revés?
+    
+    /* TODO: Implementar lógica de comparación usando las dos pilas */
+    ELEMENTO *aux = original.tope;
+    while(aux!=NULL){
+        push(&invertida,aux->d);
+        aux=aux->siguiente;
+    }
+
+    ELEMENTO *aux1=original.tope;
+    ELEMENTO *aux2=invertida.tope;
+
+    while(aux1!=NULL && aux2!= NULL){
+        if(aux1->d != aux2->d)
+            return 0;
+        aux1=aux1->siguiente;
+        aux2=aux2->siguiente;
+    }
+    return 1; // Retornar 1 si es palíndromo, 0 si no.
 }
 
-int main(void) {
-    char str[] = "3 4 5 + *"; // Representa (4 + 5) * 3 = 27
-    PILA polaca;
+int main() {
+    char prueba1[] = "Anita lava la tina";
+    char prueba2[] = "Estructuras de Datos";
 
-    printf("--- INICIO DE PRÁCTICA ---\n");
-    inicializar(&polaca); 
-    printf("Expresion: %s\n", str);
+    printf("--- TEST DE PALINDROMOS ---\n");
     
-    rellenar(&polaca, str);  
-    printf("Resultado esperado: 27\n");
-    printf("Resultado obtenido: %d\n", evaluar(&polaca)); 
+    printf("Prueba 1: '%s' -> %s\n", prueba1, 
+           esPalindromo(prueba1) ? "ES PALINDROMO" : "NO ES PALINDROMO");
+           
+    printf("Prueba 2: '%s' -> %s\n", prueba2, 
+           esPalindromo(prueba2) ? "ES PALINDROMO" : "NO ES PALINDROMO");
 
     return 0;
 }

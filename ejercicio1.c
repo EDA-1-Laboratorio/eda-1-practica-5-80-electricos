@@ -18,8 +18,6 @@ void inicializar(PILA *stk) {
        1. Inicializar el contador de elementos (cnt) a 0.
        2. Inicializar el puntero al tope a NULL. 
     */
-int cnt;
-ELEMENTO *tope;
 }
 
 // Funcion push
